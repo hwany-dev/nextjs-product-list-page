@@ -1,0 +1,39 @@
+@use 'shared/styles/tokens' as *;
+@use 'shared/styles/mixins' as *;
+
+.footer {
+  padding-block: $space-10;
+  font-size: $font-size-sm;
+  line-height: $line-height-base;
+  color: $color-text-tertiary;
+  background-color: $color-white;
+}
+
+.inner {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+
+  li + li::before {
+    content: '|';
+    margin-inline: $space-3;
+  }
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.info {
+  font-style: normal;
+}
+
+.underline {
+  text-decoration: underline;
+}

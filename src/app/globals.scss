@@ -18,6 +18,8 @@ html {
 }
 
 body {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   font-family: $font-family-base;
   font-size: $font-size-md;
@@ -28,6 +30,11 @@ body {
   word-break: keep-all; // 한글이 음절 단위로 끊기지 않게 한다
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+// 콘텐츠가 짧아도 푸터가 화면 아래에 붙도록 main이 남는 높이를 채운다.
+main {
+  flex: 1;
 }
 
 img,
