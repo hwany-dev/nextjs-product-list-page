@@ -1,0 +1,71 @@
+@use 'shared/styles/tokens' as *;
+@use 'shared/styles/mixins' as *;
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: $z-header;
+  height: $header-height;
+  background-color: $color-white;
+  box-shadow: $shadow-header;
+}
+
+.inner {
+  @include container;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.logo {
+  flex-shrink: 0;
+  margin-right: 100px; // 시안: 로고 끝(223) → 첫 메뉴(323)
+}
+
+.navList {
+  display: flex;
+  gap: $space-8;
+}
+
+.navLink {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-tight;
+  color: $color-text-secondary;
+  transition: color $transition-base;
+
+  &:hover,
+  &[aria-current='page'] {
+    color: $color-primary;
+  }
+}
+
+.utilities {
+  display: flex;
+  gap: 27px; // 시안: 24px 아이콘 박스 사이 간격
+  margin-left: auto;
+}
+
+.utilityLink {
+  position: relative;
+  display: block;
+  color: $color-gray-700;
+}
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 $space-1;
+  font-size: 10px;
+  font-weight: $font-weight-medium;
+  line-height: 1;
+  color: $color-white;
+  background-color: $color-primary;
+  border-radius: $radius-full;
+}
