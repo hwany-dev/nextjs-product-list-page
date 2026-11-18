@@ -1,36 +1,254 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 히든카이스 스토어 — 상품 목록 페이지(PLP)
 
-## Getting Started
+히든카이스(HIDDEN KICE) 교재 스토어의 상품 목록 페이지입니다.
+Supabase에 넣은 더미 교재 데이터를 **CSR로 불러와** 필터·검색·페이지네이션과 함께 보여 줍니다.
 
-First, run the development server:
+- 배포: _(Vercel 배포 후 URL 추가)_
+- 디자인 원본: [`docs/design/plp.svg`](docs/design/plp.svg) (1440 × 2400)
+
+## 목차
+
+1. [실행 방법](#1-실행-방법)
+2. [기술 스택과 선택 이유](#2-기술-스택과-선택-이유)
+3. [폴더 구조](#3-폴더-구조)
+4. [CSR 처리 방식](#4-csr-처리-방식)
+5. [Supabase 스키마](#5-supabase-스키마)
+6. [시안에 없어서 새로 정한 부분](#6-시안에-없어서-새로-정한-부분)
+7. [시안과 다르게 적용한 부분](#7-시안과-다르게-적용한-부분)
+8. [AI 활용 방식](#8-ai-활용-방식)
+
+---
+
+## 1. 실행 방법
+
+**요구 사항**: Node.js 20 이상, Supabase 프로젝트
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# 1) 의존성 설치
+npm install
+
+# 2) 환경변수 설정 — .env.example을 복사해 값을 채운다
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```
+NEXT_PUBLIC_SUPABASE_URL=https://<project-id>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon 또는 publishable key>
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Supabase 대시보드 → **SQL Editor**에서 아래 두 파일을 순서대로 실행합니다.
+   - [`docs/supabase/schema.sql`](docs/supabase/schema.sql): 테이블, 인덱스, RLS 정책
+   - [`docs/supabase/seed.sql`](docs/supabase/seed.sql): 더미 교재 29개(노출 28개 + RLS 확인용 비공개 1개)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# 4) 개발 서버
+npm run dev        # http://localhost:3000
+```
 
-## Learn More
+| 명령                              | 설명                               |
+| --------------------------------- | ---------------------------------- |
+| `npm run dev`                     | 개발 서버                          |
+| `npm run build` / `npm start`     | 프로덕션 빌드 / 실행               |
+| `npm run lint`                    | ESLint                             |
+| `npm run typecheck`               | 라우트 타입 생성 후 `tsc --noEmit` |
+| `npm run format` / `format:check` | Prettier 적용 / 검사               |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 2. 기술 스택과 선택 이유
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| 영역       | 선택                                             | 이유                                                                                                                                     |
+| ---------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| 프레임워크 | Next.js 16 (App Router) + TypeScript             | 과제 요구사항. 라우팅·이미지 최적화·폰트 최적화를 기본으로 제공                                                                          |
+| 스타일     | SCSS Modules                                     | 컴포넌트 단위로 클래스가 격리되고, App Router에서 별도 설정이 필요 없음. CSS-in-JS는 서버 컴포넌트와 함께 쓰려면 추가 설정이 필요해 제외 |
+| 데이터     | Supabase (`@supabase/supabase-js`)               | 과제 요구사항. 브라우저 클라이언트만 사용                                                                                                |
+| 서버 상태  | TanStack Query                                   | 로딩·에러 상태, 조건별 캐시, 오래된 요청 취소, 페이지 전환 시 이전 목록 유지를 직접 구현하지 않기 위해                                   |
+| 폰트       | Pretendard (KS X 1001 서브셋, `next/font/local`) | 전체 가변 폰트(2MB) 대신 자주 쓰는 한글만 담은 서브셋 4개 굵기(약 1MB)를 직접 호스팅. 외부 요청과 레이아웃 이동이 없음                   |
+| 품질       | ESLint, Prettier, `tsc --noEmit`                 | 포맷은 Prettier, 품질 검사는 ESLint로 역할을 나눔(`eslint-config-prettier`)                                                              |
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 3. 폴더 구조
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+기능(feature) 단위로 나누고, 여러 기능이 함께 쓰는 것은 `shared`에 둡니다(Feature-Sliced Design을 단순화한 형태).
+
+```
+src/
+├── app/                      # 라우팅과 레이아웃 조립만 담당
+│   ├── layout.tsx            # 폰트, Providers, Header/Footer
+│   ├── page.tsx              # 메인(PLP) 조립 — 서버 컴포넌트
+│   ├── providers.tsx         # QueryClientProvider ('use client')
+│   └── fonts/                # Pretendard 서브셋 + OFL 라이선스
+│
+├── widgets/                  # 여러 기능을 조합하는 큰 화면 블록
+│   ├── Header/               # GNB
+│   ├── HeroBanner/           # 메인 배너
+│   └── Footer/
+│
+├── features/
+│   └── product/
+│       ├── api/getProducts.ts          # Supabase 쿼리(필터·검색·페이지네이션)
+│       ├── hooks/
+│       │   ├── useProducts.ts          # useQuery 래핑, queryKey 관리
+│       │   └── useProductSearchParams.ts  # URL ↔ 조회 조건
+│       ├── components/
+│       │   ├── ProductListSection/     # 아래 컴포넌트를 묶는 클라이언트 섹션
+│       │   ├── ProductSearch/
+│       │   ├── ProductFilter/          # 전체 | 패스 | 단품
+│       │   ├── ProductGrid/
+│       │   └── ProductCard/
+│       ├── model/
+│       │   ├── types.ts                # 도메인 타입
+│       │   ├── mapper.ts               # DB row(snake_case) → 도메인(camelCase)
+│       │   ├── searchParams.ts         # 쿼리스트링 파싱·직렬화
+│       │   └── constants.ts            # 페이지당 개수, 디바운스 시간 등
+│       ├── lib/price.ts                # 할인율 계산, 가격 포맷
+│       └── index.ts                    # 외부에 공개하는 것만 export
+│
+├── shared/                   # 도메인과 무관한 공용 코드
+│   ├── ui/                   # Button, Icon, Pagination, Skeleton, StatusMessage
+│   ├── hooks/                # useDebouncedCallback
+│   ├── lib/supabase/client.ts  # Supabase 클라이언트(싱글턴)
+│   ├── config/env.ts         # 환경변수 검증
+│   └── styles/               # _tokens.scss(디자인 토큰), _mixins.scss
+│
+└── types/database.types.ts   # DB 타입(supabase gen types 형식)
+```
+
+### 의존 방향
+
+```
+app → widgets → features → shared
+```
+
+- 아래 레이어는 위 레이어를 import하지 않습니다.
+- 다른 레이어에서 feature를 쓸 때는 `features/product/index.ts`만 거칩니다. 내부 구현(`getProducts`, mapper 등)은 숨깁니다.
+
+### 확장 시나리오
+
+- **상품 상세(PDP)**: `app/products/[id]/page.tsx`와 `features/product/api/getProductById.ts`를 추가합니다. 기존 코드는 고치지 않습니다.
+- **장바구니**: `features/cart/`를 새로 만들고, 카드의 담기 버튼과 헤더 배지는 `widgets`에서 연결합니다.
+- **백엔드 교체**: Supabase 의존은 `shared/lib/supabase`와 `features/*/api`에만 있어 그 부분만 바꾸면 됩니다.
+
+---
+
+## 4. CSR 처리 방식
+
+과제가 **CSR로 불러오기**를 요구하므로, 상품 데이터는 서버에서 미리 불러오지 않고 브라우저에서 요청합니다.
+
+```
+page.tsx (서버 컴포넌트, 레이아웃만 조립)
+  └─ ProductListSection ('use client')
+       └─ useProducts (TanStack Query)
+            └─ getProducts (api 레이어)
+                 └─ supabase client → Supabase(RLS 검사) → products
+```
+
+- `page.tsx`는 얇게 두고, 데이터가 필요한 부분만 클라이언트 컴포넌트로 분리했습니다. 헤더·배너·푸터는 서버에서 렌더링됩니다.
+- 컴포넌트는 Supabase를 직접 호출하지 않고 반드시 `api` 함수를 거칩니다.
+- **상태 처리**: 로딩(카드와 같은 크기의 스켈레톤) / 빈 결과 / 에러(다시 시도 버튼)를 모두 화면에 표시합니다.
+- **캐시**: 조건(필터·검색어·페이지)을 `queryKey`에 넣어, 한 번 본 조건으로 돌아가면 다시 요청하지 않습니다.
+- **요청 취소**: 검색어를 빠르게 바꾸면 이전 요청을 `AbortSignal`로 취소합니다.
+- **Suspense**: URL을 읽는 `useSearchParams`는 정적 렌더링 시점에 값을 알 수 없어 Suspense 경계로 감쌌습니다.
+
+---
+
+## 5. Supabase 스키마
+
+### `products`
+
+| 컬럼            | 타입                        | 설명                                                   |
+| --------------- | --------------------------- | ------------------------------------------------------ |
+| `id`            | `uuid` PK                   | `gen_random_uuid()`                                    |
+| `title`         | `text` not null             | 상품명                                                 |
+| `type`          | `text` not null             | `'single'`(단품) / `'pass'`(패스), CHECK 제약          |
+| `price`         | `integer` not null          | 정가                                                   |
+| `sale_price`    | `integer` null              | 할인가. null이면 할인 없음. `sale_price < price` CHECK |
+| `thumbnail_url` | `text` not null             | `public/` 이미지 경로                                  |
+| `season`        | `integer`                   | 시즌 번호                                              |
+| `is_visible`    | `boolean` default true      | 노출 여부                                              |
+| `sort_order`    | `integer` default 0         | 정렬 순서                                              |
+| `created_at`    | `timestamptz` default now() |                                                        |
+
+- **할인율은 저장하지 않고** `price`와 `sale_price`로 계산합니다. 같은 정보를 두 곳에 두면 어긋날 수 있기 때문입니다. 소수점은 버려 실제보다 큰 할인율을 표시하지 않습니다.
+- **정렬**: `sort_order` 오름차순 → `created_at` 내림차순. 이 조건에 맞춘 부분 인덱스를 두었습니다.
+
+### 보안(RLS)
+
+anon(publishable) 키는 브라우저 코드에 포함되어 누구나 볼 수 있습니다. 그래서 **키가 아니라 RLS가 실제 보안 경계**입니다.
+
+- 익명 사용자는 `is_visible = true`인 행의 `select`만 허용합니다. 쓰기 정책이 없으므로 추가·수정·삭제는 모두 거부됩니다.
+- 시드의 비공개 상품 1개로 정책이 동작하는지 확인했습니다. 익명 조회 결과는 28개이고, 익명 insert는 RLS 위반으로 거부됩니다.
+- `service_role` 키는 코드 어디에도 쓰지 않습니다.
+
+---
+
+## 6. 시안에 없어서 새로 정한 부분
+
+시안은 1440px 데스크톱의 정지 화면 한 장이라 동작과 다른 화면 크기는 정해져 있지 않습니다. 아래는 직접 정한 내용과 이유입니다.
+
+### 반응형
+
+| 구간         | 적용 내용                                                             | 이유                                                                                                      |
+| ------------ | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| 1024px 이상  | 시안 그대로(4열)                                                      | 기준 해상도                                                                                               |
+| 768 ~ 1023px | 2열 그리드, 헤더 간격·글자 축소                                       | 4열은 카드가 너무 작아짐                                                                                  |
+| 768px 미만   | 2열 그리드, 헤더를 2줄(1줄: 로고+아이콘, 2줄: 메뉴)로, 검색창 전체 폭 | 375px 폭에서는 글자를 줄여도 로고·메뉴·아이콘이 한 줄에 들어가지 않음. 아이콘은 터치하기 쉽도록 24px 유지 |
+
+- 모바일 2열 카드는 폭이 좁아 카드 글자를 한 단계 줄였습니다(상품명 16→14px, 판매가 18→16px).
+
+### 탭 클릭 시 필터링
+
+- 전체 / 패스 / 단품을 누르면 Supabase 쿼리에 `type` 조건을 붙여 다시 조회합니다.
+- 조건이 바뀌면 결과가 달라지므로 **1페이지부터** 다시 보여 줍니다.
+
+### 검색 동작
+
+- 제목에 검색어가 **포함된** 상품을 대소문자 구분 없이 찾습니다(`ilike`).
+- 입력이 **300ms 멈추면** 검색합니다. 글자마다 요청이 나가는 것을 막기 위해서입니다. Enter를 누르면 기다리지 않고 바로 검색합니다.
+- 검색어의 `%`, `_`는 와일드카드가 아니라 글자 그대로 찾도록 이스케이프합니다. 이스케이프하지 않으면 `%` 입력만으로 전체 상품이 검색됩니다.
+
+### URL 동기화
+
+- 필터·검색어·페이지를 URL에 둡니다. 예: `?type=pass&q=시즌&page=2`
+- 새로고침하거나 링크를 공유해도 같은 목록이 보이고, 뒤로 가기로 이전 조건에 돌아갈 수 있습니다.
+- 검색어는 `replace`, 탭·페이지는 `push`로 바꿉니다. 글자마다 뒤로 가기 기록이 쌓이지 않게 하기 위해서입니다.
+- 잘못된 값(`?type=abc`, `?page=-1`)은 기본값으로 처리하고, 없는 페이지(`?page=10`)는 마지막 페이지로 보정합니다.
+
+### 그 밖에
+
+- **헤더 상단 고정**: 스크롤해도 메뉴에 바로 접근할 수 있게 했습니다.
+- **로딩·빈 결과·에러 화면**: 시안에는 데이터가 있는 상태만 있어 새로 만들었습니다.
+- **페이지 전환 중 표시**: 다음 페이지를 불러오는 동안 이전 목록을 흐리게 보여 줍니다. 화면이 스켈레톤으로 깜빡이지 않게 하기 위해서입니다.
+- **페이지 번호 개수**: 페이지가 많아지면 현재 페이지를 가운데 둔 최대 5개 번호만 보여 줍니다. 시안은 3페이지뿐이라 번호가 많을 때의 모양이 없습니다.
+- **긴 상품명**: 시안의 상품명은 모두 한 줄이지만, 실제 데이터는 길 수 있어 2줄까지 보여 주고 나머지는 말줄임(…) 처리했습니다.
+- **마우스 오버**: 메뉴·탭·페이지 버튼에 마우스를 올리면 색이 바뀝니다. 누를 수 있는 요소임을 알리기 위해서입니다.
+- **장바구니·알림 배지**: 과제 범위가 UI까지라 시안 값(1)을 고정으로 보여 주고, 링크는 `#`로 두었습니다.
+- **더미 데이터 구성**: 시안의 상품명은 모두 "2026 Hidden Kice 시즌7"이지만, 검색·필터 동작을 확인할 수 있도록 2025·2026년 시즌 1~7의 단품·패스로 구성했습니다. 시안에서 단품은 할인이 없고 패스만 할인이 있어 같은 규칙을 따랐고, 노출 상품을 28개로 맞춰 시안처럼 3페이지가 나오게 했습니다.
+
+---
+
+## 7. 시안과 다르게 적용한 부분
+
+| 항목                    | 시안                      | 적용                        | 이유                                                                                                                                                                                                       |
+| ----------------------- | ------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **메인 배너**           | 캐러셀(인디케이터 `1/5`)  | **단독 배너**               | 배너 이미지가 1장만 주어졌습니다. 같은 이미지를 5번 넘기는 캐러셀은 의미가 없어 고정 배너로 바꿨습니다. 이미지에 문구가 들어 있어 잘리지 않도록 화면 폭에 맞춰 비율대로 높이를 정합니다(1440px에서 490px). |
+| **가격 숫자**           | 76,000원 / 5% / 64,800원  | 판매가를 할인율과 맞게 계산 | 76,000원의 5% 할인은 72,200원이라 시안 숫자끼리 맞지 않습니다. 할인율은 DB에 저장하지 않고 계산하므로 계산 값을 기준으로 했습니다.                                                                         |
+| **할인율 색**           | 한 카드만 `#EF4444`(빨강) | 모두 `#FA622F`(주황)        | 나머지 카드는 모두 주황이라 시안 실수로 판단했습니다.                                                                                                                                                      |
+| **푸터 좌측 여백**      | 60px                      | 80px                        | 다른 영역은 모두 80px이라 정렬을 맞췄습니다.                                                                                                                                                               |
+| **검색어 지우기(×)**    | 빈 검색창에도 표시        | 입력이 있을 때만 표시       | 지울 내용이 없을 때는 동작이 없는 버튼이 되기 때문입니다.                                                                                                                                                  |
+| **1페이지의 이전 버튼** | 다른 버튼과 같은 모양     | 흐리게(비활성)              | 누를 수 없는 상태임을 알 수 있게 했습니다.                                                                                                                                                                 |
+
+텍스트가 path로 변환된 SVG라 폰트 크기·굵기는 글자 높이와 렌더링 결과로 역산해 [`_tokens.scss`](src/shared/styles/_tokens.scss)에 정리했습니다.
+
+---
+
+## 8. AI 활용 방식
+
+Claude Code(Anthropic)를 페어 프로그래머로 사용했습니다.
+
+- **작업 규칙 문서화**: 폴더 구조, 의존 방향, 데이터 패칭 규칙, 커밋 규칙을 [`CLAUDE.md`](CLAUDE.md)에 먼저 정리하고, AI가 이 규칙을 따르도록 했습니다.
+- **단계별 진행**: CLAUDE.md의 권장 순서(초기화 → 토큰 → 레이아웃 → Supabase → 타입 → API·훅 → 카드·그리드 → 필터·검색·페이지네이션 → 배너 → 반응형 → 문서)대로 한 단계씩 진행했습니다. 단계마다 결과를 확인한 뒤 다음으로 넘어갔습니다.
+- **디자인 값 추출**: SVG를 스크립트로 분석해 색상·간격·크기를 뽑고, 구현 화면을 시안과 나란히 캡처해 비교했습니다.
+- **판단은 직접**: 시안과 다르게 할 부분(배너, 푸터 여백, 할인율 색 등)과 시안에 없는 동작은 AI가 선택지를 제시하고 제가 결정했습니다. 요구사항에 없는 기능은 임의로 넣지 않도록 했습니다.
+- **검증**: 커밋마다 lint, typecheck, build를 통과시키고, Supabase에 실제로 조회해 RLS가 동작하는지 확인했습니다.
