@@ -1,0 +1,29 @@
+@use 'shared/styles/tokens' as *;
+
+.tabs {
+  display: flex;
+  align-items: center;
+}
+
+// 시안: 탭 사이 "|" 구분자, 양옆 약 14px
+.divider {
+  margin-inline: 14px;
+  color: $color-text-secondary;
+}
+
+.tab {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  line-height: $line-height-base;
+  color: $color-text-secondary;
+  transition: color $transition-base;
+
+  &:hover {
+    color: $color-text-strong;
+  }
+
+  &[aria-selected='true'] {
+    font-weight: $font-weight-bold;
+    color: $color-text-strong;
+  }
+}
