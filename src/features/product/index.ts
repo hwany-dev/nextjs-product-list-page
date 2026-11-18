@@ -3,3 +3,4 @@
 export type { Product, ProductType, ProductTypeFilter } from './model/types';
 export type { GetProductsParams, ProductsPage } from './api/getProducts';
 export { useProducts } from './hooks/useProducts';
+export { ProductListSection } from './components/ProductListSection';

@@ -1,0 +1,12 @@
+@use 'shared/styles/tokens' as *;
+@use 'shared/styles/mixins' as *;
+
+.section {
+  @include container;
+  padding-block: 50px; // 시안: 히어로 하단 → 툴바, 페이지네이션 → 푸터 간격
+}
+
+// 화면에는 시안대로 제목을 보이지 않되, 스크린 리더 사용자는 섹션을 찾을 수 있게 한다.
+.heading {
+  @include visually-hidden;
+}
