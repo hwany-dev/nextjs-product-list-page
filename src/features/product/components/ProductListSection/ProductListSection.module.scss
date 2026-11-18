@@ -1,12 +1,41 @@
 @use 'shared/styles/tokens' as *;
 @use 'shared/styles/mixins' as *;
 
+$toolbar-height: 42px;
+
 .section {
   @include container;
   padding-block: 50px; // 시안: 히어로 하단 → 툴바, 페이지네이션 → 푸터 간격
 }
 
-// 화면에는 시안대로 제목을 보이지 않되, 스크린 리더 사용자는 섹션을 찾을 수 있게 한다.
-.heading {
+// 시안: 검색창과 탭을 오른쪽 정렬, 사이 약 17px
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 17px;
+  min-height: $toolbar-height;
+  // 페이지 이동 시 이 위치로 스크롤하는데, 고정 헤더에 가려지지 않게 여유를 둔다.
+  scroll-margin-top: $header-height + $space-6;
+}
+
+.toolbarPlaceholder {
+  height: $toolbar-height;
+}
+
+.panel {
+  margin-top: 36px; // 시안: 툴바 → 그리드
+}
+
+.stale {
+  opacity: 0.5;
+  transition: opacity $transition-base;
+}
+
+.pagination {
+  margin-top: 50px; // 시안: 마지막 카드 → 페이지네이션
+}
+
+.srOnly {
   @include visually-hidden;
 }
