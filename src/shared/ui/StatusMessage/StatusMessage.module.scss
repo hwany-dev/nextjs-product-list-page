@@ -1,0 +1,27 @@
+@use 'shared/styles/tokens' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  padding: $space-10 $space-4;
+  text-align: center;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-strong;
+}
+
+.description {
+  margin-top: $space-2;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.action {
+  margin-top: $space-6;
+}
