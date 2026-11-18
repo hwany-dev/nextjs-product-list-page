@@ -1,4 +1,5 @@
 @use 'shared/styles/tokens' as *;
+@use 'shared/styles/mixins' as *;
 
 // 시안: 250px 카드 4개를 1280px 폭에 양끝 정렬(열 간격 약 93px)
 .grid {
@@ -6,6 +7,17 @@
   grid-template-columns: repeat($product-grid-columns, minmax(0, $product-card-width));
   justify-content: space-between;
   row-gap: $space-10;
+
+  // 태블릿·모바일은 2열. 카드가 화면 폭에 맞춰 늘어난다.
+  @include tablet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: $space-6;
+  }
+
+  @include mobile {
+    column-gap: $space-3;
+    row-gap: $space-8;
+  }
 }
 
 .skeletonCard {

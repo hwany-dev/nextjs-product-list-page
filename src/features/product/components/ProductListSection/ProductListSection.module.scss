@@ -6,6 +6,10 @@ $toolbar-height: 42px;
 .section {
   @include container;
   padding-block: 50px; // 시안: 히어로 하단 → 툴바, 페이지네이션 → 푸터 간격
+
+  @include mobile {
+    padding-block: $space-8;
+  }
 }
 
 // 시안: 검색창과 탭을 오른쪽 정렬, 사이 약 17px
@@ -17,6 +21,12 @@ $toolbar-height: 42px;
   min-height: $toolbar-height;
   // 페이지 이동 시 이 위치로 스크롤하는데, 고정 헤더에 가려지지 않게 여유를 둔다.
   scroll-margin-top: $header-height + $space-6;
+
+  // 모바일: 검색창이 한 줄을 다 쓰고, 탭은 그 아래 오른쪽
+  @include mobile {
+    flex-wrap: wrap;
+    row-gap: $space-3;
+  }
 }
 
 .toolbarPlaceholder {
@@ -25,6 +35,10 @@ $toolbar-height: 42px;
 
 .panel {
   margin-top: 36px; // 시안: 툴바 → 그리드
+
+  @include mobile {
+    margin-top: $space-6;
+  }
 }
 
 .stale {
@@ -34,6 +48,10 @@ $toolbar-height: 42px;
 
 .pagination {
   margin-top: 50px; // 시안: 마지막 카드 → 페이지네이션
+
+  @include mobile {
+    margin-top: $space-10;
+  }
 }
 
 .srOnly {
