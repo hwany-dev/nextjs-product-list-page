@@ -44,3 +44,14 @@ export const UserIcon = createIcon(
   'UserIcon',
   'M19 21V19C19 17.939 18.58 16.922 17.83 16.172C17.08 15.421 16.06 15 15 15H9C7.94 15 6.92 15.421 6.17 16.172C5.42 16.922 5 17.939 5 19V21M16 7C16 9.209 14.21 11 12 11C9.79 11 8 9.209 8 7C8 4.791 9.79 3 12 3C14.21 3 16 4.791 16 7Z',
 );
+
+export const SearchIcon = createIcon(
+  'SearchIcon',
+  'M19.5 19.5L15.917 15.917M17.833 11.167C17.833 14.849 14.849 17.833 11.167 17.833C7.485 17.833 4.5 14.849 4.5 11.167C4.5 7.485 7.485 4.5 11.167 4.5C14.849 4.5 17.833 7.485 17.833 11.167Z',
+);
+
+export const CloseIcon = createIcon('CloseIcon', 'M16 8L8 16M8 8L16 16');
+
+export const ChevronLeftIcon = createIcon('ChevronLeftIcon', 'M14.5 17L9.5 12L14.5 7');
+
+export const ChevronRightIcon = createIcon('ChevronRightIcon', 'M9.5 17L14.5 12L9.5 7');
