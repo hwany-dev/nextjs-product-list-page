@@ -1,0 +1,71 @@
+@use 'shared/styles/tokens' as *;
+@use 'shared/styles/mixins' as *;
+
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+.thumbnail {
+  position: relative;
+  aspect-ratio: $product-thumbnail-ratio;
+  overflow: hidden;
+  background-color: $color-white;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+}
+
+// 시안에서 단품(세로)·패스(가로) 표지 모두 비율을 유지한 채 박스 안에 들어가 있다.
+.image {
+  object-fit: contain;
+}
+
+.type {
+  margin-top: 6px;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-base;
+  color: $color-text-secondary;
+}
+
+.title {
+  margin-top: 2px;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-base;
+  color: $color-text-primary;
+  @include ellipsis(2);
+}
+
+.prices {
+  margin-top: $space-2;
+  line-height: $line-height-tight;
+}
+
+.originalPrice {
+  display: block;
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.saleRow {
+  display: flex;
+  align-items: baseline;
+  gap: $space-2;
+}
+
+.discountRate {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-discount;
+}
+
+.price {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.srOnly {
+  @include visually-hidden;
+}

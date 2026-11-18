@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 // 디자인 토큰. 값은 docs/design/plp.svg(1440 × 2400)에서 추출했다.
 // SVG의 텍스트가 path로 변환돼 있어 폰트 크기·굵기는 글리프 높이와 렌더링 결과로 역산한 값이다.
 
@@ -81,6 +83,8 @@ $hero-height: 490px;
 $product-grid-columns: 4;
 $product-card-width: 250px;
 $product-thumbnail-height: 320px;
+// aspect-ratio는 단위가 붙으면 무시되므로 단위 없는 비율로 만든다.
+$product-thumbnail-ratio: math.div($product-card-width, $product-thumbnail-height);
 
 // ---------------------------------------------------------------------------
 // Shape & Elevation
