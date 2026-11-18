@@ -8,6 +8,10 @@
   height: $header-height;
   background-color: $color-white;
   box-shadow: $shadow-header;
+
+  @include mobile {
+    height: auto;
+  }
 }
 
 .inner {
@@ -15,16 +19,53 @@
   display: flex;
   align-items: center;
   height: 100%;
+
+  // 모바일 폭(343px)에는 로고·메뉴·아이콘이 한 줄에 들어가지 않아
+  // 1줄: 로고 + 아이콘, 2줄: 메뉴로 나눈다.
+  @include mobile {
+    flex-wrap: wrap;
+    row-gap: $space-2;
+    padding-block: $space-3;
+  }
 }
 
 .logo {
   flex-shrink: 0;
   margin-right: 100px; // 시안: 로고 끝(223) → 첫 메뉴(323)
+
+  @include tablet {
+    margin-right: $space-8;
+  }
+
+  @include mobile {
+    order: 1;
+    margin-right: 0;
+
+    img {
+      width: 110px;
+      height: auto;
+    }
+  }
+}
+
+.nav {
+  @include mobile {
+    order: 3;
+    width: 100%;
+  }
 }
 
 .navList {
   display: flex;
   gap: $space-8;
+
+  @include tablet {
+    gap: $space-5;
+  }
+
+  @include mobile {
+    gap: $space-4;
+  }
 }
 
 .navLink {
@@ -32,7 +73,16 @@
   font-weight: $font-weight-semibold;
   line-height: $line-height-tight;
   color: $color-text-secondary;
+  white-space: nowrap;
   transition: color $transition-base;
+
+  @include tablet {
+    font-size: $font-size-md;
+  }
+
+  @include mobile {
+    font-size: $font-size-sm;
+  }
 
   &:hover,
   &[aria-current='page'] {
@@ -42,13 +92,24 @@
 
 .utilities {
   display: flex;
+  flex-shrink: 0; // 화면이 좁아져도 아이콘(24px)이 줄어들지 않게 한다
   gap: 27px; // 시안: 24px 아이콘 박스 사이 간격
   margin-left: auto;
+
+  @include tablet {
+    gap: $space-5;
+  }
+
+  @include mobile {
+    order: 2;
+    gap: $space-4;
+  }
 }
 
 .utilityLink {
   position: relative;
   display: block;
+  flex-shrink: 0;
   color: $color-gray-700;
 }
 
