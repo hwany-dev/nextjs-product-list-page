@@ -3,7 +3,7 @@
 히든카이스(HIDDEN KICE) 교재 스토어의 상품 목록 페이지입니다.
 Supabase에 넣은 더미 교재 데이터를 **CSR로 불러와** 필터·검색·페이지네이션과 함께 보여 줍니다.
 
-- 배포: _(Vercel 배포 후 URL 추가)_
+- 배포: https://nextjs-product-list-page.vercel.app/
 - 디자인 원본: [`docs/design/plp.svg`](docs/design/plp.svg) (1440 × 2400)
 
 ## 목차
