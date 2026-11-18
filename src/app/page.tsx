@@ -1,4 +1,5 @@
 import { ProductListSection } from '@/features/product';
+import { HeroBanner } from '@/widgets/HeroBanner';
 
 import styles from './page.module.scss';
 
@@ -7,6 +8,7 @@ export default function Home() {
   return (
     <main>
       <h1 className={styles.srOnly}>히든카이스 스토어</h1>
+      <HeroBanner />
       <ProductListSection />
     </main>
   );

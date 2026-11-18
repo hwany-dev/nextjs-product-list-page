@@ -1,0 +1,16 @@
+@use 'sass:math';
+@use 'shared/styles/tokens' as *;
+
+// 배너 이미지에 문구가 들어 있어 잘리지 않도록, 화면 폭에 맞춰 이미지 비율대로 높이를 정한다.
+// 1440px 폭에서 시안 높이(490px)와 같다.
+.hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: math.div($layout-max-width, $hero-height);
+  background-color: $color-gray-100;
+  border-bottom: 1px solid $color-gray-150;
+}
+
+.image {
+  object-fit: cover;
+}
