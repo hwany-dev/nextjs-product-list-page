@@ -1,0 +1,55 @@
+@use 'shared/styles/tokens' as *;
+
+// 시안: 250 × 42, 아이콘(24px 박스)과 텍스트 사이 약 4px
+.search {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  width: 250px;
+  height: 42px;
+  padding: 0 5px;
+  background-color: $color-white;
+  border: 1px solid $color-border-input;
+  border-radius: $radius-md;
+  transition: border-color $transition-base;
+
+  &:focus-within {
+    border-color: $color-primary;
+  }
+}
+
+.searchIcon {
+  flex-shrink: 0;
+  color: $color-text-secondary;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  font-size: $font-size-md;
+  color: $color-text-strong;
+  background: none;
+  border: none;
+  outline: none;
+
+  &::placeholder {
+    color: $color-text-secondary;
+  }
+
+  // 브라우저 기본 지우기 버튼 대신 시안의 × 버튼을 쓴다.
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+.clearButton {
+  display: flex;
+  flex-shrink: 0;
+  color: $color-text-secondary;
+  border-radius: $radius-md;
+
+  &:hover {
+    color: $color-text-strong;
+  }
+}
