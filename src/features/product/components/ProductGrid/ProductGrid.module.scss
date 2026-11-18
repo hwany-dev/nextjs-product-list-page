@@ -1,0 +1,19 @@
+@use 'shared/styles/tokens' as *;
+
+// 시안: 250px 카드 4개를 1280px 폭에 양끝 정렬(열 간격 약 93px)
+.grid {
+  display: grid;
+  grid-template-columns: repeat($product-grid-columns, minmax(0, $product-card-width));
+  justify-content: space-between;
+  row-gap: $space-10;
+}
+
+.skeletonCard {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.skeletonThumbnail {
+  aspect-ratio: $product-thumbnail-ratio;
+}
