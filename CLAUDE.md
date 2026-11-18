@@ -239,7 +239,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 6. 상품 조회 API, 쿼리 훅, Providers
 7. ProductCard → ProductGrid → 로딩/빈 상태/에러
 8. 필터 탭 → 검색 → 페이지네이션 → URL 동기화
-9. HeroCarousel
+9. 배너
 10. 반응형, 접근성 보완
 11. README, 배포 설정
 
