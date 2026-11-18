@@ -4,6 +4,8 @@ import localFont from 'next/font/local';
 import { Footer } from '@/widgets/Footer';
 import { Header } from '@/widgets/Header';
 
+import { Providers } from './providers';
+
 import './globals.scss';
 
 // 한글 웹폰트는 용량이 커서, 자주 쓰는 한글(KS X 1001)만 담은 서브셋을 직접 호스팅한다.
@@ -28,9 +30,11 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="ko" className={pretendard.variable}>
       <body>
-        <Header />
-        {children}
-        <Footer />
+        <Providers>
+          <Header />
+          {children}
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
