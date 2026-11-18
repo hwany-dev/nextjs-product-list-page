@@ -34,7 +34,7 @@ export function Header() {
     <header className={styles.header}>
       <div className={styles.inner}>
         <Link href="/" className={styles.logo}>
-          <Image src="/images/logo.svg" alt="HIDDEN KICE" width={143} height={18} priority />
+          <Image src="/images/logo.svg" alt="HIDDEN KICE" width={143} height={18} preload />
         </Link>
 
         <nav className={styles.nav} aria-label="주요 메뉴">
